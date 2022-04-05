@@ -1,4 +1,6 @@
+import 'package:deep_rooted_task/core/utils/utils.dart';
 import 'package:deep_rooted_task/screens/currency_pair/presentation/blocs/currency_pair/bloc.dart';
+import 'package:deep_rooted_task/screens/currency_pair/domain/usecases/fetch_currency_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,8 +8,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:deep_rooted_task/core/utils/constants.dart';
 import 'package:deep_rooted_task/core/utils/theme.dart';
 import 'package:deep_rooted_task/core/widgets/custom_snak_bar.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import '../../../../injection_container.dart';
+part 'currency_ui.dart';
 
 class CurrencyPage extends StatefulWidget {
   @override
@@ -15,32 +19,24 @@ class CurrencyPage extends StatefulWidget {
 }
 
 class _CurrencyPageState extends State<CurrencyPage> {
-  final TextEditingController _emailEditingController = TextEditingController();
-  final TextEditingController _passwordEditingController =
-      TextEditingController();
+  final TextEditingController _taCurrencyController = TextEditingController();
 
-  final FocusNode _emailNode = FocusNode();
-  final FocusNode _passwordNode = FocusNode();
-  final FocusNode _viewNode = FocusNode();
+  final FocusNode _currencyPairNode = FocusNode();
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   CustomSnackBar _snackBar;
-  bool _obscureText;
+  CurrencyBloc _bloc;
 
   @override
   void initState() {
     super.initState();
-    _obscureText = true;
   }
 
   @override
   void dispose() {
-    _emailNode?.dispose();
-    _passwordNode?.dispose();
-    _viewNode?.dispose();
-    _emailEditingController.dispose();
-    _passwordEditingController.dispose();
+    _currencyPairNode?.dispose();
+    _taCurrencyController.dispose();
     super.dispose();
   }
 
@@ -48,37 +44,64 @@ class _CurrencyPageState extends State<CurrencyPage> {
   Widget build(BuildContext context) {
     _snackBar = CustomSnackBar(key: Key("snackbar"), scaffoldKey: _scaffoldKey);
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_viewNode),
+      onTap: () => FocusScope.of(context).requestFocus(_currencyPairNode),
       child: Scaffold(
         key: _scaffoldKey,
         body: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.dark.copyWith(
             statusBarColor: CustomColor.statusBarColor,
           ),
-          child: _buildBody(context),
+          child: SafeArea(child: _buildBody(context)),
         ),
       ),
     );
   }
 
   BlocProvider<CurrencyBloc> _buildBody(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-    final bool isKeyboardOpen = (MediaQuery.of(context).viewInsets.bottom > 0);
     return BlocProvider<CurrencyBloc>(
-      create: (_) => sl<CurrencyBloc>(),
+      create: (context) => sl<CurrencyBloc>(),
+      lazy: false,
       child: Container(
-        height: size.height,
-        width: size.width,
         padding: EdgeInsets.all(DEFAULT_PAGE_PADDING),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-            ],
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            _buildSearch(),
+            Padding(padding: EdgeInsets.only(top: 30)),
+            _buildTickerView(),
+            _buildStatusView(),
+            _buildOrderBook()
+          ],
         ),
       ),
+    );
+  }
+
+  BlocBuilder _buildOrderBook() {
+    return BlocBuilder<CurrencyBloc, CurrencyPairState>(
+      buildWhen: (prevState, currState) {
+        return (currState is TickerSearchedState ||
+            currState is OrderBookLoadedState);
+      },
+      builder: (context, state) {
+        return state is TickerSearchedState
+            ? Column(
+                children: [
+                  TextButton(child: Text("View Order Book"), onPressed: () {
+                    sl<CurrencyBloc>().add(ViewOrderBookEvent());
+                  })
+                ],
+              )
+            : state is OrderBookLoadedState
+                ? Column(
+                    children: [
+                      TextButton(
+                          child: Text("Hide Order Book"), onPressed: () {})
+                    ],
+                  )
+                : Container();
+      },
     );
   }
 }

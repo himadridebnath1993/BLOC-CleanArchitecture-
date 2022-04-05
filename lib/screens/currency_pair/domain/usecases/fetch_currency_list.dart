@@ -4,15 +4,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:deep_rooted_task/core/error/failures.dart';
 import 'package:deep_rooted_task/core/usecases/usecase.dart';
 
-class FetchCurrencyPair implements UseCase<List<String>, String> {
+class FetchCurrencyList implements UseCase<List<String>, String> {
   final CurrencyRepository repository;
 
-  FetchCurrencyPair({@required this.repository});
+  FetchCurrencyList({@required this.repository});
 
   @override
-  Future<Either<Failure, List<String>>> call(String search) async {
-    return await repository.getCurrecyPairs(search);
+  Future<Either<Failure, List<String>>> call(String params) async {
+    return await repository.getCurrecyList(params);
   }
 }
-
-

@@ -1,8 +1,3 @@
-import 'dart:convert';
-
-import 'package:deep_rooted_task/core/error/exceptions.dart';
-import 'package:deep_rooted_task/core/utils/constants.dart';
-
 abstract class CurrencyLocalDataSource {
   Future<List<String>> getCurrencyPairs(String search);
 }
@@ -18,6 +13,8 @@ class CurrencyLocalDataSourceImpl extends CurrencyLocalDataSource {
 
   @override
   Future<List<String>> getCurrencyPairs(String search) {
-    return Future.value(list);
+     return Future.value(list
+        .where((s) => s.toLowerCase().contains(search.toLowerCase()))
+        .toList());
   }
 }
