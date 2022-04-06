@@ -26,17 +26,23 @@ class SearchTickerEvent extends CurrencyPairEvent {
   }
 }
 
-class ViewOrderBookEvent extends CurrencyPairEvent {
-  ViewOrderBookEvent();
+class ToggleOrderBookEvent extends CurrencyPairEvent {
+  final bool isView;
+  ToggleOrderBookEvent([this.isView = true]);
 
   @override
   Stream<CurrencyPairState> applyAsync(
       {CurrencyPairState currentState, CurrencyBloc bloc}) async* {
-    final result = await bloc.fetchOrderBook.call(bloc.config.toString());
-    yield* result.fold((failure) async* {
-      yield ErrorState(message: "No Record Found");
-    }, (success) async* {
-      yield OrderBookLoadedState(orderbooks: success);
-    });
+    if (isView) {
+      final result = await bloc.fetchOrderBook.call(bloc.config.toString());
+      yield* result.fold((failure) async* {
+        yield ErrorState(message: "No Record Found");
+      }, (success) async* {
+        yield OrderBookLoadedState(orderbooks: success);
+      });
+    } else {
+      await Future.delayed(Duration(seconds: 1));
+      yield OrderBookHideState();
+    }
   }
 }

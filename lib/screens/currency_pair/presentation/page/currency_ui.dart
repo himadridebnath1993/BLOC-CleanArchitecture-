@@ -68,6 +68,107 @@ extension CurrencyUI on _CurrencyPageState {
     );
   }
 
+  BlocBuilder _buildOrderBook() {
+    return BlocBuilder<CurrencyBloc, CurrencyPairState>(
+      buildWhen: (prevState, currState) {
+        return (currState is TickerSearchedState ||
+            currState is OrderBookLoadedState ||
+            currState is OrderBookHideState);
+      },
+      builder: (context, state) {
+        return state is TickerSearchedState || state is OrderBookHideState
+            ? Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          child: Text("View Order Book"),
+                          onPressed: () {
+                            sl<CurrencyBloc>().add(ToggleOrderBookEvent());
+                          }),
+                    ],
+                  ),
+                ],
+              )
+            : state is OrderBookLoadedState
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                              child: Text("Hide Order Book"),
+                              onPressed: () {
+                                sl<CurrencyBloc>()
+                                    .add(ToggleOrderBookEvent(false));
+                              }),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("ORDER BOOK",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.left),
+                      ),
+                      Card(
+                        margin: EdgeInsets.zero,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Row(children: [
+                                Expanded(
+                                    child: Text("BID PRICE",
+                                        textAlign: TextAlign.center)),
+                                Expanded(
+                                    child: Text("QTY",
+                                        textAlign: TextAlign.center)),
+                                Expanded(
+                                    child: Text("QTY",
+                                        textAlign: TextAlign.center)),
+                                Expanded(
+                                    child: Text("ASK PRICE",
+                                        textAlign: TextAlign.center))
+                              ]),
+                            ),
+                            ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: state.orderbooks.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: Row(children: [
+                                      Expanded(
+                                          child: Text(
+                                              state.orderbooks[index].bid,
+                                              textAlign: TextAlign.center)),
+                                      Expanded(
+                                          child: Text(
+                                              state.orderbooks[index].qty,
+                                              textAlign: TextAlign.center)),
+                                      Expanded(
+                                          child: Text(
+                                              state.orderbooks[index].qty2,
+                                              textAlign: TextAlign.center)),
+                                      Expanded(
+                                          child: Text(
+                                              state.orderbooks[index].ask,
+                                              textAlign: TextAlign.center))
+                                    ]),
+                                  );
+                                })
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                : Container();
+      },
+    );
+  }
+
   BlocBuilder _buildStatusView() {
     return BlocBuilder<CurrencyBloc, CurrencyPairState>(
       buildWhen: (prevState, currState) {

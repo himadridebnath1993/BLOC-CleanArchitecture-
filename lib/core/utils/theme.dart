@@ -35,14 +35,14 @@ class CustomTheme {
         fontWeight: FontWeight.bold,
         color: CustomColor.fontBlack,
       ),
-      body1: TextStyle(fontSize: 16.0, color: CustomColor.fontBlack),
-      body2: TextStyle(fontSize: 16.0, color: CustomColor.hintColor),
+      body1: TextStyle(fontSize: 14.0, color: CustomColor.fontBlack),
+      body2: TextStyle(fontSize: 14.0, color: CustomColor.hintColor),
       button: TextStyle(
         color: CustomColor.white,
         fontFamily: 'Roboto',
         fontWeight: FontWeight.w500,
-        fontSize: 14,
-        letterSpacing: 2,
+        fontSize: 16,
+        letterSpacing: 0,
       ),
     ),
   );

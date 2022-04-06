@@ -32,8 +32,17 @@ class CurrencyRemoteDataSourceImpl extends CurrencyRemoteDataSource {
     if (response.statusCode != 200) {
       throw ServerException();
     }
-    
 
-    return [];
+    Map _map = json.decode(response.body);
+    List bids = _map['bids'];
+    List asks = _map['asks'];
+    int _min = (bids.length < asks.length) ? bids.length : asks.length;
+
+    List<OrderBook> _list = [];
+    for (int i = 0; i < (_min < 5 ? _min : 5); i++) {
+      _list.add(OrderBook(
+          bid: bids[i][0], qty: bids[i][1], qty2: asks[i][1], ask: asks[i][0]));
+    }
+    return _list;
   }
 }

@@ -45,15 +45,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
     _snackBar = CustomSnackBar(key: Key("snackbar"), scaffoldKey: _scaffoldKey);
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(_currencyPairNode),
-      child: Scaffold(
-        key: _scaffoldKey,
-        body: AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle.dark.copyWith(
-            statusBarColor: CustomColor.statusBarColor,
-          ),
-          child: SafeArea(child: _buildBody(context)),
-        ),
-      ),
+      child: SafeArea(child: _buildBody(context)),
     );
   }
 
@@ -61,46 +53,48 @@ class _CurrencyPageState extends State<CurrencyPage> {
     return BlocProvider<CurrencyBloc>(
       create: (context) => sl<CurrencyBloc>(),
       lazy: false,
-      child: Container(
-        padding: EdgeInsets.all(DEFAULT_PAGE_PADDING),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            _buildSearch(),
-            Padding(padding: EdgeInsets.only(top: 30)),
-            _buildTickerView(),
-            _buildStatusView(),
-            _buildOrderBook()
-          ],
+      child: Scaffold(
+        key: _scaffoldKey,
+        body: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.dark.copyWith(
+            statusBarColor: CustomColor.statusBarColor,
+          ),
+          child: Container(
+            padding: EdgeInsets.all(DEFAULT_PAGE_PADDING),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                _buildSearch(),
+                Padding(padding: EdgeInsets.only(top: 30)),
+                _buildTickerView(),
+                _buildOrderBook(),
+                _buildStatusView()
+              ],
+            ),
+          ),
         ),
+        floatingActionButton: _buildFabButton(),
       ),
     );
   }
 
-  BlocBuilder _buildOrderBook() {
+  BlocBuilder _buildFabButton() {
     return BlocBuilder<CurrencyBloc, CurrencyPairState>(
       buildWhen: (prevState, currState) {
-        return (currState is TickerSearchedState ||
-            currState is OrderBookLoadedState);
+        return (currState is TickerSearchedState);
       },
       builder: (context, state) {
         return state is TickerSearchedState
-            ? Column(
-                children: [
-                  TextButton(child: Text("View Order Book"), onPressed: () {
-                    sl<CurrencyBloc>().add(ViewOrderBookEvent());
-                  })
-                ],
+            ? FloatingActionButton(
+                onPressed: () {
+                  sl<CurrencyBloc>()
+                      .add(SearchTickerEvent(sl<CurrencyBloc>().config));
+                },
+                backgroundColor: Colors.blue,
+                child: const Icon(Icons.replay_outlined),
               )
-            : state is OrderBookLoadedState
-                ? Column(
-                    children: [
-                      TextButton(
-                          child: Text("Hide Order Book"), onPressed: () {})
-                    ],
-                  )
-                : Container();
+            : Container();
       },
     );
   }

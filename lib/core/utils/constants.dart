@@ -5,7 +5,7 @@ const String TICKER = 'ticker/';
 const String ORDER_BOOK = 'order_book/';
 
 
-const double DEFAULT_PAGE_PADDING = 20;
+const double DEFAULT_PAGE_PADDING = 16;
 
 //routes
 const String HOME_SEARCH_ROUTE = '/';

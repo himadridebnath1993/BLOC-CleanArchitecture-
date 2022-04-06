@@ -1,4 +1,5 @@
 
+import 'package:deep_rooted_task/core/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:deep_rooted_task/core/utils/constants.dart';
 import 'package:logging/logging.dart';
@@ -20,7 +21,7 @@ class CleanArchitectureWithBloc extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'clean architecture with bloc',
-      //theme: CustomTheme.mainTheme,
+      theme: CustomTheme.mainTheme,
       onGenerateRoute: UIRouter.generateRoute,
       initialRoute: HOME_SEARCH_ROUTE,
     );

@@ -22,12 +22,13 @@ class CustomSnackBar {
       key: key,
       content: Row(
         children: <Widget>[
-          CircularProgressIndicator(),
+          CircularProgressIndicator(
+              valueColor: new AlwaysStoppedAnimation<Color>(Colors.white)),
           SizedBox(width: 10.0),
           Text("Loading..."),
         ],
       ),
-      backgroundColor: Colors.green[400],
+      backgroundColor: Colors.black,
       duration: Duration(minutes: 1),
     );
     _state?.showSnackBar(snackBar);

@@ -24,6 +24,8 @@ class OrderBookLoadedState extends CurrencyPairState {
   OrderBookLoadedState({@required this.orderbooks}) : super([orderbooks]);
 }
 
+class OrderBookHideState extends CurrencyPairState {}
+
 class ErrorState extends CurrencyPairState {
   final String message;
   ErrorState({@required this.message}) : super([message]);
